@@ -96,3 +96,78 @@ def generate_receipt_number():
     while receipt_number in existing_receipt_numbers:
         receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=3))
     return receipt_number
+
+
+# Function to check the length
+def check_length(name):
+    return len(name) <= 20
+
+# Function to check the presence
+def check_presence(name):
+    return name != ""
+
+# Function to check if the input contains only alphabets
+def check_text(name):
+    return name.isalpha()
+
+# Function to validate the input
+def validate_input():
+    def print_receipt(receipt_number, first_name, last_name, item, quantity):
+        view_receipt = tk.Toplevel()
+        view_receipt.title("Receipt")
+        view_receipt.configure(bg=dark_blue) 
+
+        receipt_frame = tk.LabelFrame(view_receipt, text="Receipt", bg=light_blue, fg=white, font=('Helvetica', 14, 'bold'))
+        receipt_frame.grid(row=0, column=0, padx=20, pady=10)
+
+        tk.Label(receipt_frame, text=f"Receipt Number: {receipt_number}", bg=light_blue, fg=white).pack(pady=5)
+        tk.Label(receipt_frame, text=f"First Name: {first_name}", bg=light_blue, fg=white).pack(pady=5)
+        tk.Label(receipt_frame, text=f"Last Name: {last_name}", bg=light_blue, fg=white).pack(pady=5)
+        tk.Label(receipt_frame, text=f"Item: {item}", bg=light_blue, fg=white).pack(pady=5)
+        tk.Label(receipt_frame, text=f"Quantity: {quantity}", bg=light_blue, fg=white).pack(pady=5)
+
+    # Get the input values
+    first_name = first_name_entry.get().strip()
+    last_name = last_name_entry.get().strip()
+    item = item_combobox.get().strip()
+    quantity = quantity_spinbox.get().strip()
+    receipt_number = generate_receipt_number()
+
+    # Debugging 
+    print(f"Debug: First Name: '{first_name}'")
+    print(f"Debug: Last Name: '{last_name}'")
+    print(f"Debug: Item: '{item}'")
+    print(f"Debug: Quantity: '{quantity}'")
+
+    # Validation
+    if not check_presence(first_name):
+        messagebox.showerror("Error in Input", "First name cannot be blank.")
+    elif not check_length(first_name):
+        messagebox.showerror("Error in Input", "First name must be shorter than 20 characters.")
+    elif not check_text(first_name):
+        messagebox.showerror("Error in Input", "First name must contain only alphabets.")
+    elif not check_presence(last_name):
+        messagebox.showerror("Error in Input", "Last name cannot be blank.")
+    elif not check_length(last_name):
+        messagebox.showerror("Error in Input", "Last name must be shorter than 20 characters.")
+    elif not check_text(last_name):
+        messagebox.showerror("Error in Input", "Last name must contain only alphabets.")
+    elif not check_presence(item):
+        messagebox.showerror("Error in Input", "Item cannot be blank.")
+    elif item not in ["Chairs", "Tables", "Candles", "Confetti"]:
+        messagebox.showerror("Error in Input", "Item must be from the list provided.")
+    else:
+        user_entries.append({
+            "first_name": first_name,
+            "last_name": last_name,
+            "item": item,
+            "receipt_number": receipt_number,
+            "quantity": quantity
+        })
+        with open("user_entries.txt", "a") as file:
+            file.write(f"{first_name},{last_name},{item},{receipt_number},{quantity}\n")
+        
+        response = messagebox.askyesno("Entry Complete", f"Entry is stored with Receipt Number: {receipt_number}. Do you want to return to the main window?")
+        if response:
+            print_receipt(receipt_number, first_name, last_name, item, quantity)
+
