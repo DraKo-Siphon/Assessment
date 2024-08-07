@@ -170,4 +170,72 @@ def validate_input():
         response = messagebox.askyesno("Entry Complete", f"Entry is stored with Receipt Number: {receipt_number}. Do you want to return to the main window?")
         if response:
             print_receipt(receipt_number, first_name, last_name, item, quantity)
+first_name_entry.get_toplevel().destroy()
+        else:
+            exit()
+
+# This is the Refund Window
+def refund_window():
+    global refund_first_name_entry, refund_last_name_entry, refund_receipt_entry, refund_quantity_label, refund_quantity_spinbox
+
+    refund = tk.Toplevel()
+    refund.title("Refund Window")
+    refund.configure(bg=dark_green) 
+
+    refund_frame = tk.LabelFrame(refund, text="Refund Details", bg=light_green, font=custom_font)
+    refund_frame.grid(row=0, column=0)
+
+    refund_first_name_label = tk.Label(refund_frame, text="First Name", bg=light_green, font=custom_font)
+    refund_first_name_label.grid(row=0, column=0, padx=20, pady=10)
+    refund_first_name_entry = tk.Entry(refund_frame, font=custom_font, bg=white)
+    refund_first_name_entry.grid(row=1, column=0, padx=20, pady=10)
+
+    refund_last_name_label = tk.Label(refund_frame, text="Last Name", bg=light_green, font=custom_font)
+    refund_last_name_label.grid(row=0, column=1, padx=20, pady=10)
+    refund_last_name_entry = tk.Entry(refund_frame, font=custom_font, bg=white)
+    refund_last_name_entry.grid(row=1, column=1, padx=20, pady=10)
+
+    refund_quantity_label = tk.Label(refund_frame, text="Quantity", bg=light_green, font=custom_font)
+    refund_quantity_spinbox = tk.Spinbox(refund_frame, from_=1, to=500, font=custom_font)
+    refund_quantity_label.grid(row=2, column=1, padx=20, pady=10)
+    refund_quantity_spinbox.grid(row=3, column=1, padx=20, pady=10)
+
+    refund_receipt_label = tk.Label(refund_frame, text="Receipt Number", bg=light_green, font=custom_font)
+    refund_receipt_label.grid(row=2, column=0, padx=20, pady=10)
+    refund_receipt_entry = tk.Entry(refund_frame, font=custom_font, bg=white)
+    refund_receipt_entry.grid(row=3, column=0, padx=20, pady=10)
+
+    refund_item_label = tk.Label(refund_frame, text="Item", bg=light_green, font=custom_font)
+    refund_item_combobox = ttk.Combobox(refund_frame, values=["Chairs", "Tables", "Candles", "Confetti"], font=custom_font)
+    refund_item_label.grid(row=0, column=2, padx=20, pady=10)
+    refund_item_combobox.grid(row=1, column=2, padx=20, pady=10)
+
+    refund_button = tk.Button(refund_frame, text="Submit", command=process_refund, font=custom_font, bg=light_green, fg=white)
+    refund_button.grid(row=4, column=0)
+
+    back_button = tk.Button(refund_frame, text="Back to Main", command=refund.destroy, font=custom_font, bg=light_green, fg=white)
+    back_button.grid(row=4, column=1, padx=10, pady=5)
+
+# Function to process the refund
+def process_refund():
+    first_name = refund_first_name_entry.get().strip()
+    last_name = refund_last_name_entry.get().strip()
+    receipt_number = refund_receipt_entry.get().strip()
+    refund_quantity = int(refund_quantity_spinbox.get().strip())
+
+    for entry in user_entries:
+        if entry["receipt_number"] == receipt_number:
+            current_quantity = int(entry["quantity"])
+            if refund_quantity >= current_quantity:
+                user_entries.remove(entry)
+            else:
+                entry["quantity"] = str(current_quantity - refund_quantity)
+            with open("user_entries.txt", "w") as file:
+                for entry in user_entries:
+                    file.write(f"{entry['first_name']},{entry['last_name']},{entry['item']},{entry['receipt_number']},{entry['quantity']}\n")
+            messagebox.showinfo("Refund Processed", f"Refund processed for Receipt Number: {receipt_number}")
+            return
+
+    messagebox.showerror("Refund Error", "Receipt Number not found.")
+
 
