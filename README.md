@@ -115,7 +115,15 @@ def validate_input():
     def print_receipt(receipt_number, first_name, last_name, item, quantity):
         view_receipt = tk.Toplevel()
         view_receipt.title("Receipt")
-        view_receipt.configure(bg=dark_blue) 
+        view_receipt.configure(bg=dark_blue)
+
+# Function to check if quantity is between 1 and 500
+def check_quantity(quantity):
+    try:
+        qty = int(quantity)
+        return 1 <= qty <= 500
+    except ValueError:
+        return False
 
         receipt_frame = tk.LabelFrame(view_receipt, text="Receipt", bg=light_blue, fg=white, font=('Helvetica', 14, 'bold'))
         receipt_frame.grid(row=0, column=0, padx=20, pady=10)
@@ -156,6 +164,8 @@ def validate_input():
         messagebox.showerror("Error in Input", "Item cannot be blank.")
     elif item not in ["Chairs", "Tables", "Candles", "Confetti"]:
         messagebox.showerror("Error in Input", "Item must be from the list provided.")
+    elif not check_quantity(quantity):
+        messagebox.showerror("Error in Input", "Quantity must be a number between 1 and 500.")
     else:
         user_entries.append({
             "first_name": first_name,
@@ -237,5 +247,72 @@ def process_refund():
             return
 
     messagebox.showerror("Refund Error", "Receipt Number not found.")
+
+def load_receipts():
+    global user_entries
+    try:
+        with open("user_entries.txt", "r") as file:
+            for line in file:
+                first_name, last_name, item, receipt_number, quantity = line.strip().split(",")
+                user_entries.append({
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "item": item,
+                    "receipt_number": receipt_number,
+                    "quantity": quantity
+                })
+    except FileNotFoundError:
+        pass
+
+# This is the View Receipts Window
+def view_receipts_window():
+    view_receipts = tk.Toplevel()
+    view_receipts.title("View Receipts")
+    view_receipts.configure(bg=dark_green) 
+
+    view_frame = tk.Frame(view_receipts, bg=dark_green)
+    view_frame.pack(padx=20, pady=20)
+
+    if user_entries:
+        for entry in user_entries:
+            receipt_info = (f"Receipt Number: {entry['receipt_number']} - Name: {entry['first_name']} {entry['last_name']} "
+                            f"- Item: {entry['item']} - Quantity: {entry['quantity']}")
+            tk.Label(view_frame, text=receipt_info, bg=dark_green, fg=white, font=custom_font).pack(pady=5)
+    else:
+        tk.Label(view_frame, text="No receipts available", bg=dark_green, fg=white, font=custom_font).pack(pady=5)
+
+    back_button = tk.Button(view_frame, text="Back to Main", command=view_receipts.destroy, font=custom_font, bg=light_green, fg=white)
+    back_button.pack(pady=10)
+
+    try:
+        with open("user_entries.txt", "r") as file:
+            lines = file.readlines()
+            if not lines:
+                view_receipts_listbox.insert(tk.END, "There were no receipts found.")
+                return
+
+            for line in lines:
+                line = line.strip()
+                if line:  # Check if line is not empty
+                    parts = line.split(",")
+                    if len(parts) == 5:  # Ensure there are exactly 5 parts
+                        first_name, last_name, item, receipt_number, quantity = parts
+                        receipt_display = (f"Receipt Number: {receipt_number} | Name: {first_name} {last_name} "
+                                           f"| Item: {item} | Quantity: {quantity}")
+                        view_receipts_listbox.insert(tk.END, receipt_display)
+                    else:
+                        view_receipts_listbox.insert(tk.END, f"Incorrect line: {line}")
+    except FileNotFoundError:
+        view_receipts_listbox.insert(tk.END, "Receipts file not found.")
+# Function to confirm quit
+
+def confirm_quit():
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        main_window.destroy()
+
+# Start the main window
+if __name__ == "__main__":
+    main_window()
+
 
 
