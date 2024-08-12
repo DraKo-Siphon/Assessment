@@ -148,24 +148,27 @@ def check_quantity(quantity):
     print(f"Debug: Quantity: '{quantity}'")
 
     # Validation
+    errors = []
     if not check_presence(first_name):
-        messagebox.showerror("Error in Input", "First name cannot be blank.")
+        errors.append("First name cannot be blank.")
     elif not check_length(first_name):
-        messagebox.showerror("Error in Input", "First name must be shorter than 20 characters.")
+        errors.append("First name must be shorter than 20 characters.")
     elif not check_text(first_name):
-        messagebox.showerror("Error in Input", "First name must contain only alphabets.")
-    elif not check_presence(last_name):
-        messagebox.showerror("Error in Input", "Last name cannot be blank.")
+        errors.append("First name cannot contain numbers and must contain only alphabets.")
+    if not check_presence(last_name):
+        errors.append("Last name cannot be blank.")
     elif not check_length(last_name):
-        messagebox.showerror("Error in Input", "Last name must be shorter than 20 characters.")
+        errors.append("Last name must be shorter than 20 characters.")
     elif not check_text(last_name):
-        messagebox.showerror("Error in Input", "Last name must contain only alphabets.")
-    elif not check_presence(item):
-        messagebox.showerror("Error in Input", "Item cannot be blank.")
+        errors.append("Last name cannot contain numbers and must contain only alphabets.")
+    if not check_presence(item):
+        errors.append("Item cannot be blank.")
     elif item not in ["Chairs", "Tables", "Candles", "Confetti"]:
-        messagebox.showerror("Error in Input", "Item must be from the list provided.")
-    elif not check_quantity(quantity):
-        messagebox.showerror("Error in Input", "Quantity must be a number between 1 and 500.")
+        errors.append("Item must be from the list provided.")
+    if not check_quantity(quantity):
+        errors.append("Quantity must be a number between 1 and 500.")
+    if errors:
+        messagebox.showerror("Error in Input", "\n".join(errors))
     else:
         user_entries.append({
             "first_name": first_name,
@@ -226,15 +229,47 @@ def refund_window():
     back_button = tk.Button(refund_frame, text="Back to Main", command=refund.destroy, font=custom_font, bg=light_green, fg=white)
     back_button.grid(row=4, column=1, padx=10, pady=5)
 
+def validate_refund_input(first_name, last_name, receipt_number, refund_quantity):
+    errors = []
+
+    if not check_presence(first_name):
+        errors.append("First name cannot be blank.")
+    elif not check_length(first_name):
+        errors.append("First name must be shorter than 20 characters.")
+    elif not check_text(first_name):
+        errors.append("First name cannot contain numbers and must contain only alphabets.")
+
+    if not check_presence(last_name):
+        errors.append("Last name cannot be blank.")
+    elif not check_length(last_name):
+        errors.append("Last name must be shorter than 20 characters.")
+    elif not check_text(last_name):
+        errors.append("Last name cannot contain numbers and must contain only alphabets.")
+
+    if not check_presence(receipt_number):
+        errors.append("Receipt number cannot be blank.")
+    
+    if not check_quantity(refund_quantity):
+        errors.append("Quantity must be a number between 1 and 500.")
+
+    return errors
+
 # Function to process the refund
 def process_refund():
     first_name = refund_first_name_entry.get().strip()
     last_name = refund_last_name_entry.get().strip()
     receipt_number = refund_receipt_entry.get().strip()
-    refund_quantity = int(refund_quantity_spinbox.get().strip())
+    refund_quantity = refund_quantity_spinbox.get().strip()
+
+    errors = validate_refund_input(first_name, last_name, receipt_number, refund_quantity)
+    if errors:
+        messagebox.showerror("Error in Input", "\n".join(errors))
+        return
+
+    refund_quantity = int(refund_quantity)  # Convert to integer only after validation
 
     for entry in user_entries:
-        if entry["receipt_number"] == receipt_number:
+        if entry["receipt_number"] == receipt_number and entry["first_name"] == first_name and entry["last_name"] == last_name:
             current_quantity = int(entry["quantity"])
             if refund_quantity >= current_quantity:
                 user_entries.remove(entry)
@@ -246,7 +281,8 @@ def process_refund():
             messagebox.showinfo("Refund Processed", f"Refund processed for Receipt Number: {receipt_number}")
             return
 
-    messagebox.showerror("Refund Error", "Receipt Number not found.")
+    messagebox.showerror("Refund Error", "No matching receipt found for the provided details you provided.")
+
 
 def load_receipts():
     global user_entries
