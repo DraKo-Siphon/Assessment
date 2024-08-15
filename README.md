@@ -25,9 +25,7 @@ def main_window():
 
     main_frame = tk.Frame(main_window, bg=dark_green)
     main_frame.pack(padx=20, pady=20)
-
-    #Image
-
+    
     # Hire button
     hire_button = tk.Button(main_frame, text="Hire Item", command=hire_window, font=custom_font, bg=light_green, fg=white, width=12)
     hire_button.grid(row=1, column=1, padx=20, pady=10)
@@ -39,6 +37,14 @@ def main_window():
     # View Receipts Button
     view_receipts_button = tk.Button(main_frame, text="View Receipts", command=view_receipts_window, font=custom_font, bg=light_green, fg=white, width=12)
     view_receipts_button.grid(row=3, column=1, padx=2, pady=10)
+    
+    #Images 
+    gif = tk.PhotoImage(file="party.png")
+    gif_resized = gif.subsample(2, 2)  # Adjust the subsample values to resize the image
+
+    label = tk.Label(main_window, image=gif_resized, bg=dark_green)
+    label.image = gif_resized  
+    label.pack(side=tk.TOP, pady=10)
 
     # Quit Button
     quit_button = tk.Button(main_frame, text="Quit", command=confirm_quit, font=custom_font, bg=light_green, fg=white, width=12)
@@ -283,7 +289,7 @@ def process_refund():
 
     messagebox.showerror("Refund Error", "No matching receipt found for the provided details you provided.")
 
-
+#Function to load receipts
 def load_receipts():
     global user_entries
     try:
