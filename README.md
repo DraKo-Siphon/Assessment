@@ -1,3 +1,5 @@
+#All versions of the code are uploaded on GitHub.
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 import random
@@ -98,6 +100,7 @@ def hire_window():
 
 # Function to generate a random receipt number
 def generate_receipt_number():
+    #combines uppercase letters and numbers to form a 5 character receipt number
     receipt_number = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
     existing_receipt_numbers = [entry["receipt_number"] for entry in user_entries]
     while receipt_number in existing_receipt_numbers:
