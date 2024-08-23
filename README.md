@@ -1,3 +1,5 @@
+#Author - Arnav Arora
+#Date - 21/08/24
 #All versions of the code are uploaded on GitHub.
 
 import tkinter as tk
@@ -47,7 +49,7 @@ def main_window():
     quit_button.grid(row=4, column=0, columnspan=2, padx=20, pady=10)
 
     #Images 
-    gif = tk.PhotoImage(file="party.png")
+    gif = tk.PhotoImage(file="parties.png")
     gif_resized = gif.subsample(2, 2)  
     label = tk.Label(main_frame, image=gif_resized, bg=dark_blue)
     label.image = gif_resized
