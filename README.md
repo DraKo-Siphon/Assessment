@@ -302,7 +302,16 @@ def load_receipts():
     try:
         with open("user_entries.txt", "r") as file:
             for line in file:
-                first_name, last_name, item, receipt_number, quantity = line.strip().split(",")
+                line = line.strip()
+                if not line:  
+                    continue
+                
+                parts = line.split(",")
+                if len(parts) != 5:  # Check if there are exactly 5 parts
+                    print(f"Skipping malformed line: {line}")
+                    continue
+                
+                first_name, last_name, item, receipt_number, quantity = parts
                 user_entries.append({
                     "first_name": first_name,
                     "last_name": last_name,
@@ -311,7 +320,7 @@ def load_receipts():
                     "quantity": quantity
                 })
     except FileNotFoundError:
-        pass
+        print("File not found. No receipts to load.")
 
 # This is the View Receipts Window
 def view_receipts_window():
