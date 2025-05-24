@@ -1,0 +1,18 @@
+#V1 
+class MathFlashCards:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Math Flash Cards - Area Edition")
+        self.root.geometry("400x700")
+        self.root.configure(bg='#0052cc')
+        self.main_menu()
+
+    def main_menu(self):
+        self.clear()
+        self.title_label("Math Flash Cards")
+        self.button("Start", self.details, 150, 110)
+        self.button("Info", ..., 60, 180)
+        self.button("History\nof Math", ..., 210, 180)
+        self.button("Quit", self.root.quit, 150, 250)
+
+    
